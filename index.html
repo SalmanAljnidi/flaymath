@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#0b1320"/>
+  <title>فلابي الرياضيات - سلمان الجنيدي</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="icon" href="icons/icon-192.png"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🕊️</span>
+      <div>
+        <div class="title">فلابي الرياضيات</div>
+        <div class="sub">لعبة ويب تعمل أوفلاين (PWA)</div>
+      </div>
+    </div>
+    <button id="installBtn" class="btn ghost" hidden>تثبيت</button>
+  </header>
+
+  <main class="wrap">
+    <section class="panel" id="setupPanel">
+      <h1>ابدأ اللعب</h1>
+      <div class="grid">
+        <label class="field">
+          <span>الاسم</span>
+          <input id="playerName" type="text" inputmode="text" placeholder="اكتب الاسم هنا" maxlength="24" autocomplete="off"/>
+        </label>
+
+        <div class="field">
+          <span>اختيار الصف</span>
+          <div class="segmented" role="radiogroup" aria-label="اختيار الصف">
+            <label class="seg">
+              <input type="radio" name="grade" value="12" checked/>
+              <span>أول + ثاني ابتدائي</span>
+            </label>
+            <label class="seg">
+              <input type="radio" name="grade" value="45"/>
+              <span>رابع + خامس ابتدائي</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>اختيار الشخصية</span>
+          <div class="skins" id="skins">
+            <button class="skin selected" data-skin="sun" type="button" aria-label="شخصية الشمس">
+              <span class="dot sun"></span><span>الشمس</span>
+            </button>
+            <button class="skin" data-skin="mint" type="button" aria-label="شخصية النعناع">
+              <span class="dot mint"></span><span>النعناع</span>
+            </button>
+            <button class="skin" data-skin="berry" type="button" aria-label="شخصية التوت">
+              <span class="dot berry"></span><span>التوت</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="startBtn" class="btn primary">ابدأ</button>
+        <button id="howBtn" class="btn">طريقة اللعب</button>
+      </div>
+
+      <div class="hint">
+        <p>💡 اضغط/انقر أو اضغط زر المسافة للطيران. تجنّب الأنابيب. عند الخسارة سيظهر سؤال لإكمال اللعب.</p>
+      </div>
+    </section>
+
+    <section class="game" id="gamePanel" hidden>
+      <div class="hud">
+        <div class="hud-left">
+          <div class="chip"><span id="hudName">طالب</span></div>
+          <div class="chip"><span id="hudGrade">—</span></div>
+        </div>
+        <div class="score">
+          <div class="scoreLabel">النتيجة</div>
+          <div id="scoreValue" class="scoreValue">٠</div>
+        </div>
+      </div>
+
+      <canvas id="gameCanvas" width="900" height="520" aria-label="ساحة اللعبة"></canvas>
+
+      <div class="controls">
+        <button id="pauseBtn" class="btn ghost">إيقاف مؤقت</button>
+        <button id="restartBtn" class="btn">إعادة</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- How to play modal -->
+  <dialog id="howDialog" class="dialog">
+    <div class="dialogHead">
+      <h2>طريقة اللعب</h2>
+      <button class="x" data-close="howDialog" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="dialogBody">
+      <ol>
+        <li>اكتب الاسم واختر المرحلة (أول/ثاني) أو (رابع/خامس).</li>
+        <li>اضغط <b>ابدأ</b>.</li>
+        <li>اضغط على الشاشة/الماوس أو زر <b>المسافة</b> للطيران.</li>
+        <li>عند الاصطدام يظهر سؤال؛ أجب بشكل صحيح لتكمل اللعب.</li>
+      </ol>
+      <p class="small">هذه اللعبة عمل تعليمي ترفيهي، وقد تختلف عن النسخة الأصلية من فلابي بيرد.</p>
+    </div>
+  </dialog>
+
+  <!-- Question modal -->
+  <dialog id="qDialog" class="dialog">
+    <div class="dialogHead">
+      <h2 id="qTitle">سؤال لإكمال اللعب</h2>
+      <button class="x" data-close="qDialog" aria-label="إغلاق" hidden>✕</button>
+    </div>
+    <div class="dialogBody">
+      <div class="qWrap">
+        <div class="qRow">
+          <div class="qText" id="qText">—</div>
+          <div class="qMeta" id="qMeta">—</div>
+        </div>
+        <div class="qVisual" id="qVisual"></div>
+
+        
+<div class="choicesRow">
+  <div class="choicesTitle">اختر الإجابة الصحيحة:</div>
+  <div class="choices" id="choices"></div>
+</div>
+
+<div id="qFeedback" class="feedback" aria-live="polite"></div>
+        <div class="afterRow" id="afterRow" hidden>
+          <button id="continueBtn" class="btn primary">تابع اللعب</button>
+          <button id="finalRestartBtn" class="btn">ابدأ من جديد</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="footer">
+    <div class="rights">جميع الحقوق محفوظة لـ <b>سلمان الجنيدي</b></div>
+    <div class="social">
+      <a class="icon wa" href="https://wa.me/966566996166" target="_blank" rel="noopener" aria-label="واتساب">
+        <span>واتساب</span>
+      </a>
+      <a class="icon snap" href="https://snapchat.com/t/9vNmejq3" target="_blank" rel="noopener" aria-label="سناب شات">
+        <span>سناب</span>
+      </a>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
